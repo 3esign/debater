@@ -1,0 +1,29 @@
+Honestly? Worse in one critical way, better in others.
+What got better:
+
+The dual-engine architecture framing is clean and honest — sandbox vs prod is a real distinction worth making explicit
+config.ts with NEXT_PUBLIC_ENGINE_MODE is the right pattern
+Genesis script still there, good
+The ledger terminal dual-mode (simulated vs real events) is a smart detail
+
+What got significantly worse:
+You just added a second product inside a first product that doesn't exist yet. Engine B — Upstash + Pusher + Coinbase AgentKit + Base Sepolia + real on-chain settlements — is a startup-scale backend. You now have two implementation plans masquerading as one. This is the classic "while I'm at it" trap and it will cause you to ship nothing.
+Real talk on Engine B complexity:
+
+AgentKit wallet management alone is weeks of work
+Pusher multiplayer sync requires careful state reconciliation (what happens when a tab drops mid-debate?)
+Base Sepolia testnet means users need a wallet, testnet ETH, and MetaMask — you've just added a 10-step onboarding before anyone sees your core product
+api/resolve/route.ts triggering real smart contract payouts has legal surface area you probably don't want
+
+The page.tsx problem is still unsolved. Three versions in, Lobby + Leaderboard + View router are still one file. This will hurt you.
+You still have four+ LLM providers. Gemini + Groq + Ollama + OpenAI + OpenRouter is still there.
+
+Here's the decision you actually need to make, stated plainly:
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.25s;
+    animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+  }
+VvisualizeVvisualize show_widgetThe one thing that would make v5 genuinely better: Delete Engine B from the implementation plan entirely. Write it as a separate document called ROADMAP_ENGINE_B.md and link to it. That's not giving up on the vision — that's protecting it. Engine B is a great v2 story. Right now it's a v1 anchor.
+The core product — two AIs debate, a glowing contract tracks it, you get a shareable receipt — is legitimately compelling on its own. It doesn't need real on-chain settlements to be worth building. Prove the debate experience first.

@@ -1,0 +1,27 @@
+14:06Claude responded: This is the best version yet — it's now a document not just a plan.This is the best version yet — it's now a document not just a plan. The vision section is genuinely compelling, the dual-engine framing is clean, and the Solidity explanation layer (plain-English per function) is a real differentiator for the educational angle.
+But I'm going to be ruthless one last time, because you're close and the remaining issues will actually hurt you during build:
+
+What's now genuinely good:
+
+"Zero cost, zero friction" Engine A framing is the right user promise
+Plain-English Solidity explanations per function — this is the educational hook that makes it shareable beyond crypto people
+Developer diary structure means you'll document as you build (rare and valuable)
+Genesis match as "5 seconds to wow" is correctly positioned
+
+What's still wrong — and these are real build problems, not aesthetic ones:
+1. Six providers are still in the plan. I've said this four times. It's still there. This isn't me being pedantic — it's the single most likely reason this project ships broken or late. Here's the math: six streaming clients × edge cases per client (rate limits, auth errors, streaming format differences, CORS on Ollama) = ~18 bugs before you've written a single UI component. Pick two for launch. Stub the rest with a // TODO comment and a disabled UI state in KeysModal. You can add Groq in a weekend once the core works.
+2. Engine B is still architecturally entangled with Engine A. The diagram looks clean but the implementation will bleed. The moment you write if (engineMode === 'production') inside ArenaView.tsx, you've coupled them. The right pattern is: Engine A ships as v1. Engine B lives in ROADMAP.md. When you're ready, Engine B replaces the API layer, it doesn't conditionally branch inside components.
+3. You still have no routing story. Five versions. Still page.tsx doing everything. The shareable receipt — your growth mechanic — requires a URL. /debate/[id] needs to exist on day one or the receipt is a screenshot of a dead end.
+4. The "Context Drift" meter is a trap. Semantic keyword overlap tracking requires either embeddings (API call + latency) or a bag-of-words hack (looks broken immediately). This is a cool idea that will consume a week and confuse users. Cut it from v1. The cost counter ($0.00018) is great — keep that.
+
+One concrete thing to do right now before writing code:
+Write this file first, nothing else:
+src/app/
+  page.tsx          ← lobby only, 50 lines max
+  debate/
+    [id]/
+      page.tsx      ← arena only
+      receipt/
+        page.tsx    ← shareable receipt, OG image meta tags
+If you can't sketch what each of those three files renders without overlapping, the architecture isn't ready yet. If you can — you're ready to build. Everything else is implementation detail.
+The vision is strong. The Solidity education angle is genuinely novel. Ship Engine A with two providers and a shareable URL, and you have something real.

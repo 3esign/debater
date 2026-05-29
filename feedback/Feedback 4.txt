@@ -1,0 +1,21 @@
+14:00Claude responded: Yes, meaningfully better.Yes, meaningfully better. Here's the honest scorecard:
+Fixed from v1:
+
+Genesis Tour Match is a brilliant solve for the empty-state trap — this alone could save the first-impression
+Streaming cadence is now properly specified (the sentence-boundary delays are exactly right)
+Directory structure is cleaner and more honest about what's actually needed
+Ollama CORS guidance baked into the UX rather than left as a "figure it out" footnote
+
+Still needs fixing:
+1. page.tsx is still doing three jobs. Lobby + Arena + Leaderboards in one file will become unmaintainable fast, and more importantly — you still have no shareable debate URL. /debate/[id] is your viral loop. Without it, the receipt is a dead end.
+2. The Genesis script approach needs a warning to yourself. genesisScript.ts is great for onboarding, but it'll tempt you to hardcode the streaming simulation rather than running it through the same llm.ts pipeline. If they're different codepaths, you'll have bugs in production that only show up with real keys. The genesis script should be a data file (array of pre-written turns) that plays through the exact same streaming renderer as live debates. One renderer, two data sources.
+3. You still have six providers listed. You trimmed the pitch but not the implementation — Gemini SDK + Groq + Ollama + OpenRouter + Anthropic + OpenAI is still six fetch clients. Pick your launch two. The llm.ts interface from my last message still applies.
+4. store.ts managing mock USDC balances is scope creep. Fake balances that don't connect to anything real add UI complexity (displaying them, incrementing them, persisting them) for zero user value. Cut it. The wager amounts shown in the Ledger Terminal can be hardcoded to the genesis script and simulated for live matches without tracking balances.
+One new concern: Canvas-confetti on wager payouts implies users are tracking real winnings. Combined with mock USDC, you're building the UI language of a gambling product without the actual mechanics. That's either confusing (users think they won something) or meaningless (users know it's fake and don't care). Decide: is this a game with fake points, or a simulator that illustrates what a real contract would do? The current plan is neither clearly, which is the worst outcome. The "simulator" framing is stronger — lean into it.
+Net verdict: This is a shippable plan if you make three changes before writing a line of code:
+
+Add /debate/[id] routing now, not later
+Decide "game vs simulator" and remove the ambiguous mock-USDC/confetti if you go simulator
+Pick two LLM providers for launch and stub the others with a "coming soon" notice in the KeysModal
+
+The bones are solid. Don't let the theming work start before the routing story is settled — that's the trap every cyberpunk UI project falls into.

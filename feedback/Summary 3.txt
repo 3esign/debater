@@ -1,0 +1,69 @@
+Claude's feedback is absolutely devastating in the best possible way. The "Collusion/Sybil" critique alone saves the entire project from being gamed into the ground on day one.
+
+That single line of Solidity they highlighted—require(msg.sender != m.agentA && msg.sender != m.agentB, "trainers cannot bet");—is the firewall that makes the prediction market actually function.
+
+Claude is also completely right about the Build Order. When you are vibe coding, it is incredibly tempting to build the shiny frontend dashboard first. But if you do that here, you'll end up with a beautiful car that has no transmission.
+
+Let's adopt Claude's build order. Here is exactly how to execute it in Cursor, moving from the State Machine, to the Contract, and finally to the UI.
+
+Step 1: The Backbone (The Custom Node.js State Machine)
+
+Flowise is too rigid for this. We need a custom Orchestrator that strictly manages the turns and locks the betting.
+
+What to do in Cursor:
+
+Open a new folder and run npm create onchain-agent@latest in the terminal. Choose the TypeScript + LangChain template and the Base Sepolia network.
+
+Open Composer (Cmd+I) and use this exact God Prompt to build the Orchestrator:
+
+*"I am building 'Debater'. I need a core State Machine in TypeScript using LangChain.
+
+Create a class MatchOrchestrator that enforces these precise states: Idle -> AgentA_Turn -> AgentB_Turn -> Voting -> Settlement.
+
+The Orchestrator must enforce a maximum of 5 turns per agent.
+
+Write a function where, before passing the output of Agent A to Agent B, the Orchestrator injects a hidden system prompt: 'You are evaluating the previous argument. Do not hallucinate. Do not lose the topic.'
+
+Ensure there is a function lockMatch() that transitions the state to Voting the moment the 5th turn concludes. Do not write the UI yet, just the backend logic."*
+
+Step 2: The Vault (The Solidity Contract)
+
+Now that the State Machine knows when things happen, we give it the vault to hold the money. We will use the exact DebaterVault contract Claude provided.
+
+What to do in Cursor:
+
+Create a new folder inside your project called contracts/.
+
+Create a file named DebaterVault.sol and paste Claude's exact code into it.
+
+Use Composer to link the State Machine to the Contract:
+
+*"I have added a Solidity contract DebaterVault.sol. Using the Coinbase AgentKit instance we initialized, write a utility file called web3Settlement.ts. I need three functions that the Orchestrator can call:
+
+triggerLock(): Calls lockBetting(matchId) on the smart contract.
+
+verifyQuorum(): Reads the contract to check if at least 10 blind votes have been revealed.
+
+executePayout(): If the quorum is met and the winner has >50% of the vote, call resolveMatch(matchId, winnerAddress). Use the AgentKit wallet to pay the gas fees for these transactions."*
+
+Step 3: The Arena (The Next.js UI)
+
+With the transmission and the engine built, now we build the car body. Because the state machine is perfectly defined, the UI just has to "listen" to it.
+
+What to do in Cursor:
+
+*"Now let's build the Next.js frontend. The UI should subscribe to the MatchOrchestrator state.
+
+If state is Live, render the split-screen chat and enable the 'Place Bet' buttons on the sidebar.
+
+If state is Voting, disable the chat, lock the betting buttons, and display a 'Commit Vote' modal.
+
+Use Tailwind for a dark, brutalist aesthetic. Read the state variables directly from the Orchestrator class."*
+
+The Open Question
+
+Claude asked the most important product question: Are you building this for a small closed beta (known agents, known trainers) or open from day one?
+
+If it's an open launch, the "Commit-Reveal" voting scheme Claude included in the contract is mandatory so Discord groups can't rig the vote. If it's a closed beta, we can strip that complex math out and launch much faster.
+
+ open from day one
