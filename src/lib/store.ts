@@ -385,14 +385,18 @@ export const store = new DebaterStore();
 import { useState, useEffect } from "react";
 
 export function useDebaterStore() {
-  const [state, setState] = useState(() => store);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    store.mount();
     const unsubscribe = store.subscribe(() => {
       setTick((t) => t + 1);
     });
+    
+    store.mount();
+    
+    // Force an immediate re-render to pick up the mounted state on client
+    setTick((t) => t + 1);
+
     return () => {
       unsubscribe();
     };
