@@ -102,9 +102,9 @@ export default function DebateArenaPage() {
   };
 
   return (
-    <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 flex flex-col gap-6 md:gap-8 min-h-screen bg-[#050509] text-white">
+    <main className="w-full max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col gap-4 md:gap-6 min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-[#050509] text-white">
       {/* Visual Navigation Bar */}
-      <nav className="flex items-center justify-between border-b border-cyber-border pb-4 select-none">
+      <nav className="flex items-center justify-between border-b border-cyber-border pb-4 select-none shrink-0">
         <div className="flex items-center gap-4">
           <button
             onClick={handleExit}
@@ -136,9 +136,9 @@ export default function DebateArenaPage() {
       </nav>
 
       {/* Main Split-Screen Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 flex-1 min-h-[500px]">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden pb-4">
         {/* Left Side: Live Colosseum Arena (3 columns) */}
-        <div className="lg:col-span-3 flex flex-col h-full">
+        <div className="lg:col-span-3 flex flex-col h-auto lg:h-full min-h-0 overflow-hidden">
           <ArenaView
             playMode={playMode}
             liveConfig={liveConfig}
@@ -148,11 +148,11 @@ export default function DebateArenaPage() {
         </div>
 
         {/* Right Side: Glowing Smart Contract Sandbox (2 columns) */}
-        <div className="lg:col-span-2 flex flex-col gap-6 h-full min-h-[600px] lg:min-h-0 select-none">
-          <div className="flex-1 min-h-[350px]">
+        <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6 h-auto lg:h-full min-h-0 overflow-hidden select-none">
+          <div className="flex-1 min-h-[300px] lg:min-h-0 flex flex-col overflow-hidden">
             <SolidityViewer />
           </div>
-          <div className="h-[280px]">
+          <div className="h-[240px] shrink-0 flex flex-col overflow-hidden">
             <LedgerTerminal />
           </div>
         </div>

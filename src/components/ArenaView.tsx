@@ -315,10 +315,10 @@ Deliver your absolute socratic closing argument. Finalize your defense in 2-3 se
   const ratioB = totalWagersCount > 0 ? (store.wagerPoolB / totalWagersCount) * 100 : 50;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 animate-in fade-in duration-300 h-full max-h-[85vh]">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 animate-in fade-in duration-300 h-full min-h-0 overflow-y-auto lg:overflow-hidden">
       
       {/* Colosseum Chat Panel (Spans 2 columns) */}
-      <div className="lg:col-span-2 flex flex-col h-full bg-cyber-panel border border-cyber-border rounded-xl overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.4)]">
+      <div className="lg:col-span-2 flex flex-col h-[500px] lg:h-full bg-cyber-panel border border-cyber-border rounded-xl overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.4)]">
         
         {/* Banner Title */}
         <div className="px-5 py-4 bg-cyber-dark/80 border-b border-cyber-border flex justify-between items-center select-none">
@@ -342,7 +342,7 @@ Deliver your absolute socratic closing argument. Finalize your defense in 2-3 se
         </div>
 
         {/* Message Feed list */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-cyber-dark/20 min-h-[300px]">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-cyber-dark/20 min-h-0">
           {store.messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-slate-600 font-mono py-12">
               <Hourglass className="w-6 h-6 text-slate-600 animate-spin mb-3" />
@@ -394,7 +394,7 @@ Deliver your absolute socratic closing argument. Finalize your defense in 2-3 se
       </div>
 
       {/* Betting Slips & State controls Panel (1 column) */}
-      <div className="flex flex-col h-full space-y-4">
+      <div className="flex flex-col h-auto lg:h-full space-y-4 overflow-y-auto pr-1">
         
         {/* Betting Slip Module */}
         <div className="p-4 bg-cyber-panel border border-cyber-border rounded-xl space-y-4 shadow-md">
