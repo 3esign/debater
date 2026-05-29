@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useDebaterStore } from "../lib/store";
 import { THEME } from "../lib/theme";
-import { Zap, ShieldCheck, Key, HelpCircle, Swords, Award, Play } from "lucide-react";
+import { Zap, ShieldCheck, Key, HelpCircle, Swords, Award, Play, Wallet, LogOut, Coins } from "lucide-react";
 import KeysModal from "./KeysModal";
 
 const TOPIC_PRESETS = [
@@ -95,17 +95,65 @@ export default function LobbyView({ onStartGenesis, onStartLive }: LobbyViewProp
       </div>
 
       {/* Global Actions bar */}
-      <div className="flex flex-col sm:flex-row gap-3.5 items-center justify-between p-4 bg-cyber-panel border border-cyber-border rounded-xl">
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded bg-cyber-amber/10 text-cyber-amber border border-cyber-amber/20`}>
-            <Zap className="w-4 h-4" />
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between p-4 bg-cyber-panel border border-cyber-border rounded-xl">
+        <div className="flex flex-wrap gap-4 items-center">
+          {/* Wallet Balance Info */}
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded bg-cyber-amber/10 text-cyber-amber border border-cyber-amber/20`}>
+              <Zap className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-500 font-mono block">YOUR WALLET BALANCE</span>
+              <span className="text-sm font-extrabold text-white font-mono">
+                {store.balance.toFixed(2)} USDC <span className="text-slate-500 text-[10px] font-normal">(Mock)</span>
+              </span>
+            </div>
           </div>
-          <div>
-            <span className="text-[10px] text-slate-500 font-mono block">YOUR WALLET</span>
-            <span className="text-sm font-extrabold text-white font-mono">
-              {store.balance.toFixed(2)} USDC <span className="text-slate-500 text-[10px] font-normal">(Mock)</span>
-            </span>
-          </div>
+
+          {/* Connected Wallet Info */}
+          {store.walletAddress ? (
+            <div className="flex items-center gap-3 md:border-l border-cyber-border/60 md:pl-4">
+              <div className={`p-2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20`}>
+                <Wallet className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-500 font-mono block">WALLET CONNECTED (BASE)</span>
+                <span className="text-xs font-mono text-slate-200 flex items-center gap-1.5">
+                  {store.walletAddress.substring(0, 6)}...{store.walletAddress.substring(38)}
+                  <button 
+                    onClick={() => store.disconnectWallet()}
+                    className="text-red-400 hover:text-red-300 font-mono text-[9px] uppercase tracking-wider block ml-1 cursor-pointer"
+                    title="Disconnect Wallet"
+                  >
+                    [Disconnect]
+                  </button>
+                </span>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => store.connectWallet("0x8b81C548C08C32D391F6007281838cD8d001105D")}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-cyber-purple/20 to-cyber-blue/20 hover:from-cyber-purple/30 hover:to-cyber-blue/30 border border-cyber-purple/40 hover:border-cyber-purple rounded-lg text-xs font-mono text-slate-300 hover:text-white transition-all shadow-[0_0_15px_rgba(168,85,247,0.05)] cursor-pointer"
+            >
+              <Wallet className="w-3.5 h-3.5 text-cyber-purple animate-pulse" />
+              <span>Connect EVM Wallet</span>
+            </button>
+          )}
+
+          {/* Accumulated Fees info if connected */}
+          {store.walletAddress && (
+            <div className="flex items-center gap-3 md:border-l border-cyber-border/60 md:pl-4 animate-in fade-in duration-200">
+              <div className={`p-2 rounded bg-cyber-amber/10 text-cyber-amber border border-cyber-amber/20`}>
+                <Coins className="w-4 h-4 text-cyber-amber" />
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-500 font-mono block">YOUR COLLECTED FEES (1.5%)</span>
+                <span className="text-xs font-bold text-cyber-amber font-mono">
+                  {store.accumulatedFeesUSDC.toFixed(2)} USDC
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         <button
@@ -117,7 +165,7 @@ export default function LobbyView({ onStartGenesis, onStartLive }: LobbyViewProp
           }`}
         >
           <Key className="w-3.5 h-3.5" />
-          <span>API Keys Manager</span>
+          <span>API Keys</span>
           {!isAnyKeyConfigured && (
             <span className="h-2 w-2 rounded-full bg-cyber-amber"></span>
           )}

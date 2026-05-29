@@ -10,6 +10,9 @@ class DebaterStore {
   public eloA = CONFIG.sandbox.defaultElo;
   public eloB = CONFIG.sandbox.defaultElo;
   public apiKeys: APIKeys = { ollamaUrl: "http://localhost:11434" };
+  public walletAddress: string | null = null;
+  public feeCollectorWallet = "0x8b81C548C08C32D391F6007281838cD8d001105D";
+  public accumulatedFeesUSDC = 0;
 
   // Match State
   public matchState: MatchState = 'lobby';
@@ -83,6 +86,12 @@ class DebaterStore {
 
       const savedKeys = localStorage.getItem("debater_api_keys");
       if (savedKeys) this.apiKeys = JSON.parse(savedKeys);
+
+      const savedWallet = localStorage.getItem("debater_wallet_address");
+      if (savedWallet) this.walletAddress = savedWallet;
+
+      const savedFees = localStorage.getItem("debater_accumulated_fees");
+      if (savedFees) this.accumulatedFeesUSDC = parseFloat(savedFees);
     } catch (e) {
       console.error("Failed loading local storage state:", e);
     }
@@ -94,6 +103,12 @@ class DebaterStore {
       localStorage.setItem("debater_elo_a", this.eloA.toString());
       localStorage.setItem("debater_elo_b", this.eloB.toString());
       localStorage.setItem("debater_api_keys", JSON.stringify(this.apiKeys));
+      if (this.walletAddress) {
+        localStorage.setItem("debater_wallet_address", this.walletAddress);
+      } else {
+        localStorage.removeItem("debater_wallet_address");
+      }
+      localStorage.setItem("debater_accumulated_fees", this.accumulatedFeesUSDC.toString());
     } catch (e) {
       console.error("Failed saving local storage state:", e);
     }
@@ -102,6 +117,19 @@ class DebaterStore {
   // Key operations
   public setApiKeys(keys: APIKeys) {
     this.apiKeys = { ...this.apiKeys, ...keys };
+    this.saveToLocalStorage();
+    this.notify();
+  }
+
+  // Wallet operations
+  public connectWallet(address: string) {
+    this.walletAddress = address;
+    this.saveToLocalStorage();
+    this.notify();
+  }
+
+  public disconnectWallet() {
+    this.walletAddress = null;
     this.saveToLocalStorage();
     this.notify();
   }
@@ -295,6 +323,7 @@ class DebaterStore {
 
     const feeAmt = (totalPayoutPool * CONFIG.sandbox.platformFeePercent) / 100;
     const netPool = totalPayoutPool - feeAmt;
+    this.accumulatedFeesUSDC += feeAmt;
 
     // Payout calculation
     let payoutAmount = 0;
